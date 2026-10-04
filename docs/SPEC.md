@@ -111,3 +111,11 @@ Do not implement:
 - general image-to-pixel-art conversion
 
 This project borrows the palette workflow idea from SLK_img2pixel, not its entire feature set.
+
+## 0.1.0 implementation notes
+
+The RGB implementation includes current-palette mapping, generated median-cut palettes, optional bounded K-Means refinement, RGB/weighted RGB/CIE76/CIEDE2000 matching, all listed dither modes, alpha thresholding, all six scopes, detached preview image processing, and persistent presets. Current Cel/Selection and scope traversal are batch-tested on Aseprite 1.3.18.6.
+
+Modify Existing is the available output mode. Duplicate Layer is deferred by user decision to preserve one-step Undo because Aseprite's native layer-duplication command cannot be grouped with the pixel edits into the same transaction. See `tests/ACCEPTANCE.md` for the checked suite and verified limitation.
+
+Indexed and Grayscale are rejected with a clear error. Tilemap, background, reference, and locked layers are skipped in broad scopes; an unsupported active layer errors before mutation. Whole Sprite includes hidden image layers; other broad scopes process visible image layers.
