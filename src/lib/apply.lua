@@ -121,6 +121,32 @@ local function prepare(sprite,settings,activeCel,activeFrame,activeLayer,palette
   end
   return prepared,skipped
 end
+function M.captureState(sprite)
+  local snapshot={sprite=sprite,cels={},images={}}
+  for _,cel in ipairs(sprite.cels) do
+    local id=cel.image.id
+    if not snapshot.images[id] then snapshot.images[id]={image=cel.image,original=cel.image:clone()} end
+    snapshot.cels[#snapshot.cels+1]={cel=cel,imageId=id}
+  end
+  return snapshot
+end
+local function copyPixels(destination,source)
+  for y=0,source.height-1 do for x=0,source.width-1 do
+    local pixel=source:getPixel(x,y)
+    if destination:getPixel(x,y)~=pixel then destination:drawPixel(x,y,pixel) end
+  end end
+end
+function M.restoreState(snapshot)
+  for _,image in pairs(snapshot.images) do copyPixels(image.image,image.original) end
+  app.refresh()
+end
+function M.preview(snapshot,settings,activeCel,activeFrame,activeLayer,palette)
+  M.restoreState(snapshot)
+  local prepared,skipped=prepare(snapshot.sprite,settings,activeCel,activeFrame,activeLayer,palette)
+  for _,item in ipairs(prepared) do copyPixels(item.source.image,item.image) end
+  app.refresh()
+  return #prepared,skipped,prepared
+end
 function M.apply(sprite,settings,activeCel,activeFrame,activeLayer,palette)
   if #palette==0 then error('The selected palette is empty.') end
   if settings.output=='Duplicate Layer' then error('Duplicate Layer output is awaiting a safe one-step Undo implementation; choose Modify Existing for now.') end

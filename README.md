@@ -11,8 +11,8 @@ Version `0.1.0`. Tested with Aseprite `1.3.18.6`.
 1. Install `AretePaletteLimiter.aseprite-extension` from **Edit > Preferences > Extensions > Add Extension**, then restart or rescan extensions.
 2. Open an RGB sprite and run **Arete Palette Limiter** from the Scripts menu.
 3. Choose **Current Sprite Palette** or **Generate From Artwork**. For generated palettes, choose 2–256 colors; the default is 16.
-4. Choose a scope, matching method, and optional dither. Press **Preview** to inspect the active cel sample and palette swatches.
-5. Press **Apply**. **Modify Existing** is grouped as one labeled undo step. Use Aseprite Undo to restore the source.
+4. Adjust scope, matching, dithering, alpha, and palette settings while the artwork updates in a live preview. Each refresh starts from the captured original pixels.
+5. Press **Apply** to commit the visible result as one undo step. **Cancel**, Escape, or closing the dialog restores the original artwork without adding undo history.
 
 ## Features
 
@@ -23,7 +23,7 @@ Version `0.1.0`. Tested with Aseprite `1.3.18.6`.
 - Alpha threshold and preserve-transparency controls; error diffusion skips transparent and below-threshold pixels
 - Current Cel, Selection, Current Frame, Current Layer, All Frames, and Whole Sprite scopes
 - Named persistent presets; generated palettes are stored in a preset for reuse
-- Detached preview image and visual palette swatches
+- Reversible live preview with visual palette swatches; every refresh starts from the original captured cels
 - Linked cels are detached only when needed; a one-step Undo restores both pixels and linked state
 
 Weighted RGB uses squared channel error `0.299·ΔR² + 0.587·ΔG² + 0.114·ΔB²`. Lab conversion uses sRGB → linear RGB → D65 XYZ → CIE Lab. Destination Lab values are prepared once per processing pass; repeated-color nearest matches are cached only when dithering is off.
@@ -62,7 +62,7 @@ The Aseprite batch tests cover color math, deterministic palette generation, dit
 & 'C:\path\to\Aseprite.exe' --batch tests/fixture.aseprite --script tests/runner.lua
 ```
 
-The visual dialog and canvas appearance still need a manual GUI review. The test matrix and remaining limitations are in `tests/ACCEPTANCE.md`.
+The live preview transaction and pixel restoration are batch-tested. Dialog callbacks, visible canvas refresh, Escape, and title-bar close still need a manual GUI review. The test matrix and remaining limitations are in `tests/ACCEPTANCE.md`.
 
 ## Development layout
 

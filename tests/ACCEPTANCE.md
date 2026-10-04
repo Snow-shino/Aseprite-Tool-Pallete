@@ -28,12 +28,16 @@ Automated against the installed Aseprite `1.3.18.6` runtime using:
 - [x] Modify Existing commits in one undo step and Undo restores source pixels
 - [x] Preset save, overwrite, load, palette persistence, and delete
 - [x] Indexed images are rejected before mutation
-- [x] Preview processing uses an isolated Image clone and does not edit the source
+- [x] Repeated live preview refreshes always start from captured original pixels
+- [x] Cancel restoration recovers the exact source pixel and linked-image relationship
+- [x] Preview and restoration do not add undo-history entries
+- [x] Apply after preview commits the same result as one undo step; one Undo restores the original
 
 ## Blocked or needs GUI review
 
 - [x] Duplicate Layer intentionally deferred by user decision to preserve one-step Undo. The unsupported option is omitted from the dialog and guarded in the apply layer.
+- [ ] In the GUI, verify setting callbacks refresh the sprite, and test Cancel, Escape, and title-bar close restoration.
 - [ ] Visually inspect dialog sizing, preview canvas rendering, palette swatches, and preset control interactions in Aseprite's GUI.
 - [ ] Manually verify installation through the Extensions preferences UI.
 
-The automated preview assertion verifies source immutability of the detached preview image calculation. It does not verify the dialog's rendered canvas appearance.
+Automated checks cover the reversible snapshot/preview/commit API. Batch mode cannot exercise interactive Dialog events, so live widget refresh and dismissal paths remain GUI checks.

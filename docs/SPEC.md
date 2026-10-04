@@ -8,7 +8,7 @@ Primary workflow:
 3. Pick existing palette or generate a new limited palette.
 4. Pick target color count.
 5. Choose matching and dithering.
-6. Preview.
+6. Inspect the automatically refreshed live preview.
 7. Apply.
 
 The common workflow should take only a few clicks.
@@ -73,12 +73,7 @@ All final changes grouped into one undo transaction.
 
 ## Preview
 
-Preview should:
-- be reversible without polluting undo history where possible
-- never corrupt the source
-- debounce expensive recomputation
-- show resulting palette swatches
-- expose Before/After or preview toggle if practical
+Live preview restores captured source pixels before every refresh, never adds undo-history entries, and rolls back when the dialog closes without Apply. Setting changes refresh after a short debounce; the preview shows resulting palette swatches.
 
 ## Presets
 

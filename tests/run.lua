@@ -57,6 +57,14 @@ eq(cel1.image.id,cel2.image.id,'fixture uses linked cels')
 local blackPalette={{r=0,g=0,b=0,a=255}}
 local settings={distance='RGB Euclidean',dither='None',amount=100,preserveAlpha=true,alphaThreshold=1,scope='Current Cel',output='Modify Existing'}
 eq(cel1.image:getPixel(0,0),app.pixelColor.rgba(255,0,0,255),'source fixture')
+local linkedSnapshot=apply.captureState(sprite); local linkedUndo=sprite.undoHistory.undoSteps
+apply.preview(linkedSnapshot,settings,cel1,sprite.frames[1],layer,blackPalette)
+eq(cel1.image:getPixel(0,0),app.pixelColor.rgba(0,0,0,255),'linked cel preview appears on sprite')
+eq(cel1.image.id,cel2.image.id,'live preview preserves linked image identity')
+eq(sprite.undoHistory.undoSteps,linkedUndo,'linked live preview leaves undo history unchanged')
+apply.restoreState(linkedSnapshot)
+eq(cel1.image:getPixel(0,0),app.pixelColor.rgba(255,0,0,255),'linked live preview restores source pixels')
+eq(cel1.image.id,cel2.image.id,'live preview restoration preserves links')
 local undoBefore=sprite.undoHistory.undoSteps
 local count=apply.apply(sprite,settings,cel1,sprite.frames[1],layer,blackPalette); eq(count,1,'current cel scope count')
 cel1=layer:cel(1); cel2=layer:cel(2)
@@ -114,6 +122,29 @@ eq(#sprite.layers,layersBefore,'rejected duplication creates no layer'); eq(#spr
 local faint=Image(1,1,ColorMode.RGB); faint:putPixel(0,0,app.pixelColor.rgba(255,0,0,3))
 local faintCel={image=faint,position=Point(0,0)}; settings.alphaThreshold=4; settings.output='Modify Existing'
 apply.processImage(faint,faintCel,blackPalette,settings,nil); eq(faint:getPixel(0,0),app.pixelColor.rgba(255,0,0,3),'below-threshold alpha pixel is preserved')
+
+-- Live preview always starts from the captured original and never creates undo history.
+local liveSprite=Sprite(1,1,ColorMode.RGB); local liveLayer=liveSprite:newLayer(); local liveImage=Image(1,1,ColorMode.RGB)
+liveImage:putPixel(0,0,app.pixelColor.rgba(100,100,100,255)); local liveCel=liveSprite:newCel(liveLayer,1,liveImage,Point(0,0))
+local liveState=apply.captureState(liveSprite); local liveUndo=liveSprite.undoHistory.undoSteps; local liveRedo=liveSprite.undoHistory.redoSteps
+local liveSettings={distance='RGB Euclidean',dither='None',amount=0,preserveAlpha=true,alphaThreshold=1,scope='Current Cel',output='Modify Existing'}
+apply.preview(liveState,liveSettings,liveCel,liveSprite.frames[1],liveLayer,{{r=200,g=200,b=200,a=255}})
+eq(liveCel.image:getPixel(0,0),app.pixelColor.rgba(200,200,200,255),'first live preview applied')
+local _,_,secondPreview=apply.preview(liveState,liveSettings,liveCel,liveSprite.frames[1],liveLayer,{{r=0,g=0,b=0,a=255},{r=200,g=200,b=200,a=255}})
+eq(secondPreview[1].image:getPixel(0,0),app.pixelColor.rgba(0,0,0,255),'second preview starts from original pixels')
+eq(liveCel.image:getPixel(0,0),app.pixelColor.rgba(0,0,0,255),'sprite preview does not accumulate prior result')
+eq(liveSprite.undoHistory.undoSteps,liveUndo,'live preview does not add undo history')
+eq(liveSprite.undoHistory.redoSteps,liveRedo,'live preview does not alter redo history')
+apply.restoreState(liveState); eq(liveCel.image:getPixel(0,0),app.pixelColor.rgba(100,100,100,255),'restore returns exact source pixel')
+assert(liveCel.image:isEqual(liveState.images[liveCel.image.id].original),'cancel snapshot restores byte-identical image')
+eq(liveSprite.undoHistory.undoSteps,liveUndo,'restore does not add undo history')
+eq(liveSprite.undoHistory.redoSteps,liveRedo,'restore does not alter redo history')
+apply.preview(liveState,liveSettings,liveCel,liveSprite.frames[1],liveLayer,{{r=0,g=0,b=0,a=255},{r=200,g=200,b=200,a=255}})
+apply.restoreState(liveState)
+apply.apply(liveSprite,liveSettings,liveCel,liveSprite.frames[1],liveLayer,{{r=0,g=0,b=0,a=255},{r=200,g=200,b=200,a=255}})
+eq(liveSprite.undoHistory.undoSteps,liveUndo+1,'apply after preview is one undo step')
+eq(liveCel.image:getPixel(0,0),app.pixelColor.rgba(0,0,0,255),'apply commits preview result')
+app.undo(); eq(liveCel.image:getPixel(0,0),app.pixelColor.rgba(100,100,100,255),'one undo restores original after preview apply')
 
 -- Preview image computation uses a detached clone and leaves the source byte-identical.
 settings.scope='Current Cel'; settings.output='Modify Existing'
