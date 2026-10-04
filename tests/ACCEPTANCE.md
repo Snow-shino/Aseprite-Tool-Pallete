@@ -32,6 +32,8 @@ Automated against the installed Aseprite `1.3.18.6` runtime using:
 - [x] Cancel restoration recovers the exact source pixel and linked-image relationship
 - [x] Preview and restoration do not add undo-history entries
 - [x] Apply after preview commits the same result as one undo step; one Undo restores the original
+- [x] Plugin registers the exact command title in the Sprite menu group; installed command is enabled and dispatches with a sprite
+- [x] Default `Ctrl+Shift+P` key contribution targets the exact command title; no built-in shortcut conflict in installed `gui.xml`
 
 ## Blocked or needs GUI review
 
@@ -39,5 +41,6 @@ Automated against the installed Aseprite `1.3.18.6` runtime using:
 - [ ] In the GUI, verify setting callbacks refresh the sprite, and test Cancel, Escape, and title-bar close restoration.
 - [ ] Visually inspect dialog sizing, preview canvas rendering, palette swatches, and preset control interactions in Aseprite's GUI.
 - [ ] Manually verify installation through the Extensions preferences UI.
+- [ ] In the GUI, verify the Sprite menu entry, Run Command search result, and `Ctrl+Shift+P` launch.
 
 Automated checks cover the reversible snapshot/preview/commit API. Batch mode cannot exercise interactive Dialog events, so live widget refresh and dismissal paths remain GUI checks.

@@ -176,3 +176,16 @@ local nonEmptyCount=apply.apply(sprite,settings,cel1,sprite.frames[1],layer,blac
 
 require('src.ui')
 dofile('src/main.lua')
+local registeredCommand
+init({newCommand=function(_,command) registeredCommand=command end})
+eq(registeredCommand.id,'AretePaletteLimiter','native command id')
+eq(registeredCommand.title,'Arete Palette Limiter','native command title')
+eq(registeredCommand.group,'sprite_crop','native Sprite menu group')
+assert(registeredCommand.onenabled(),'command enabled with an open sprite')
+assert(type(registeredCommand.onclick)=='function','command launches limiter dialog')
+local installedCommand=app.command.AretePaletteLimiter
+if installedCommand then
+  assert(installedCommand.enabled==(app.sprite~=nil),'installed command enablement follows sprite availability')
+  local dispatched=pcall(function() installedCommand() end)
+  assert(dispatched,'installed command dispatches through Aseprite')
+end

@@ -9,7 +9,7 @@ Version `0.1.0`. Tested with Aseprite `1.3.18.6`.
 ## Quick start
 
 1. Install `AretePaletteLimiter.aseprite-extension` from **Edit > Preferences > Extensions > Add Extension**, then restart or rescan extensions.
-2. Open an RGB sprite and run **Arete Palette Limiter** from the Scripts menu.
+2. Open an RGB sprite and run **Arete Palette Limiter** from the Sprite menu near Crop/Trim, or find it by title in **Run Command** (`Ctrl+Space`). The default shortcut is `Ctrl+Shift+P`.
 3. Choose **Current Sprite Palette** or **Generate From Artwork**. For generated palettes, choose 2–256 colors; the default is 16.
 4. Adjust scope, matching, dithering, alpha, and palette settings while the artwork updates in a live preview. Each refresh starts from the captured original pixels.
 5. Press **Apply** to commit the visible result as one undo step. **Cancel**, Escape, or closing the dialog restores the original artwork without adding undo history.
@@ -48,7 +48,7 @@ Presets are stored under Aseprite's user configuration directory in `AretePalett
 
 ## Install from source
 
-For development, run `src/main.lua` from Aseprite's Scripts menu or package the project as described below.
+For development, install the project package as an extension so Aseprite can call `init(plugin)`. The command is then available from the Sprite menu and Run Command search.
 
 ## Package
 

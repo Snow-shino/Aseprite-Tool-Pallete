@@ -7,12 +7,19 @@
     "name": "Arete Studios"
   },
   "categories": [
-    "Scripts"
+    "Scripts",
+    "Keys"
   ],
   "contributes": {
     "scripts": [
       {
         "path": "./src/main.lua"
+      }
+    ],
+    "keys": [
+      {
+        "id": "arete-palette-limiter-shortcut",
+        "path": "./arete-palette-limiter.aseprite-keys"
       }
     ]
   }
