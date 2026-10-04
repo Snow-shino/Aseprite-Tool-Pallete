@@ -1,0 +1,19 @@
+{
+  "name": "arete-palette-limiter",
+  "displayName": "Arete Palette Limiter",
+  "description": "Palette limiting, nearest-color remapping, palette generation, and dithering tools for Aseprite.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Arete Studios"
+  },
+  "categories": [
+    "Scripts"
+  ],
+  "contributes": {
+    "scripts": [
+      {
+        "path": "./src/main.lua"
+      }
+    ]
+  }
+}
